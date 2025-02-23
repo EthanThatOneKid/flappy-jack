@@ -1,0 +1,140 @@
+<!doctype html>
+
+<html>
+
+
+
+<head>
+
+<script src="libraries/p5.js"></script>
+
+<script src="libraries/p5.dom.js"></script>
+
+<script src="libraries/p5.sound.js"></script>
+
+<script src="libraries/p5.collide2d.js"></script>
+
+
+<script src='sketch.js'></script>
+
+<script src="user.js"></script>
+
+<script src="pipe.js"></script>
+
+<script src="upload.js"></script>
+
+</head>
+
+
+
+<script src="https://www.gstatic.com/firebasejs/4.9.1/firebase.js"></script>
+
+<script>
+
+  // Initialize Firebase
+
+  var config = {
+
+    apiKey: "Redacted",
+
+    authDomain: "floppy-fish-1.firebaseapp.com",
+
+    databaseURL: "https://floppy-fish-1.firebaseio.com",
+
+    projectId: "floppy-fish-1",
+
+    storageBucket: "floppy-fish-1.appspot.com",
+
+    messagingSenderId: "369376224667"
+
+  };
+
+  firebase.initializeApp(config);
+
+</script>
+
+
+
+<script>
+
+	window.setInterval(updateScoreboard, 5000);
+
+		
+
+	function updateScoreboard() {
+
+		var leaderboard = firebase.database().ref().child('players/').once('value').then(function(snapshot) {
+
+			return snapshot.val();
+
+		});
+
+		leaderboard.then(function(result) {
+
+			var topThree = Object.keys(result).sort(function(a,b){return result[b].score-result[a].score});
+
+			topThree = [{'name':topThree[0], 'score':result[topThree[0]].score}, {'name':topThree[1], 'score':result[topThree[1]].score}, {'name':topThree[2], 'score':result[topThree[2]].score}];
+
+			//console.log(topThree);
+
+			let inner = '<table><tr><td colspan=\'2\'><strong>High Scores</strong></td></tr>';
+
+			inner += '<tr bgcolor=\'yellow\'><td>' + topThree[0].name + '</td><td>' + topThree[0].score + '</td></tr>';
+
+			inner += '<tr bgcolor=\'grey\'><td>' + topThree[1].name + '</td><td>' + topThree[1].score + '</td></tr>';
+
+			inner += '<tr bgcolor=\'orange\'><td>' + topThree[2].name + '</td><td>' + topThree[2].score + '</td></tr>';
+
+			inner += '</table>'
+
+			document.getElementById('leaderboard-container').innerHTML = inner;
+
+		});
+
+	}
+
+</script>
+
+
+
+<style>
+
+	td {
+
+		border: solid 1px
+
+	}
+
+</style>
+
+
+
+<body onload='updateScoreboard()'>
+
+
+
+<table align='center' style='margin:0; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);'>
+
+<tr><td align='center'>
+
+<div id='leaderboard-container'></div>
+
+</td><td align='center'>
+
+<div id='canvas-container'></div>
+
+</td><td align='center'>
+
+<button onclick='(function(){location.reload();})()'>reload</button>
+
+</td></tr>
+
+</table>
+
+
+
+</body>
+
+
+
+</html>
